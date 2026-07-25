@@ -1,375 +1,45 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b1220">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Behesht Reserve">
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="apple-touch-icon" href="./icon-180.png">
-  <title>Behesht Cafe Reservations</title>
-  <style>
-    :root{
-      --bg:#090f1b;--panel:#111827;--panel2:#172033;--line:#273449;
-      --gold:#d4af37;--gold2:#f6d365;--text:#f8fafc;--muted:#94a3b8;
-      --green:#22c55e;--blue:#3b82f6;--red:#ef4444;--orange:#f59e0b;
-      --shadow:0 16px 42px rgba(0,0,0,.34)
-    }
-    *{box-sizing:border-box}
-    html{background:var(--bg)}
-    body{
-      margin:0;min-height:100vh;color:var(--text);
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
-      background:
-        radial-gradient(circle at 92% 0%,rgba(212,175,55,.17),transparent 34%),
-        radial-gradient(circle at 0% 100%,rgba(59,130,246,.08),transparent 28%),
-        linear-gradient(180deg,#090f1b,#0f172a);
-      padding:calc(14px + env(safe-area-inset-top)) 12px calc(20px + env(safe-area-inset-bottom))
-    }
-    button,input,select,textarea{font:inherit}
-    button{cursor:pointer}
-    .wrap{max-width:1180px;margin:auto}
-    .header{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:58px;height:58px;border-radius:18px;display:grid;place-items:center;
-      background:linear-gradient(145deg,var(--gold2),var(--gold));color:#111827;
-      font-size:28px;font-weight:950;box-shadow:var(--shadow)
-    }
-    h1{font-size:1.28rem;margin:0;color:var(--gold2)}
-    .subtitle{font-size:.84rem;color:var(--muted);margin-top:2px}
-    .header-actions{display:flex;gap:8px}
-    .icon-btn{
-      border:1px solid var(--line);background:rgba(17,24,39,.92);color:#fff;
-      border-radius:12px;padding:9px 11px;font-weight:800
-    }
-    .notice{
-      background:rgba(212,175,55,.08);border:1px solid rgba(212,175,55,.27);
-      color:#fde68a;border-radius:12px;padding:10px 12px;font-size:.82rem;margin-bottom:14px
-    }
-    .layout{display:grid;grid-template-columns:1fr;gap:14px}
-    @media(min-width:930px){.layout{grid-template-columns:390px 1fr;align-items:start}}
-    .card{
-      background:rgba(17,24,39,.95);border:1px solid var(--line);border-radius:19px;
-      padding:16px;box-shadow:var(--shadow)
-    }
-    .card h2{font-size:1rem;margin:0 0 14px}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-    .full{grid-column:1/-1}
-    label{display:block;color:#cbd5e1;font-size:.77rem;font-weight:800;margin-bottom:5px}
-    input,select,textarea{
-      width:100%;border:1px solid var(--line);background:#0d1524;color:#fff;
-      border-radius:11px;padding:11px 12px;font-size:16px;outline:none
-    }
-    input:focus,select:focus,textarea:focus{
-      border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.12)
-    }
-    textarea{min-height:82px;resize:vertical}
-    .btn{border:0;border-radius:11px;padding:11px 13px;font-weight:850}
-    .primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111827;width:100%}
-    .secondary{background:#243047;color:#fff}
-    .blue{background:#172e52;color:#bfdbfe}
-    .green{background:#12391f;color:#bbf7d0}
-    .orange{background:#3b2a10;color:#fde68a}
-    .danger{background:#3a1d24;color:#fecaca}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-    .toolbar .btn{font-size:.8rem}
-    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
-    .stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px 7px;text-align:center}
-    .stat b{display:block;font-size:1.12rem;color:var(--gold2)}
-    .stat span{font-size:.7rem;color:var(--muted)}
-    .filters{display:grid;grid-template-columns:1fr 130px;gap:8px;margin-bottom:12px}
-    @media(max-width:540px){.filters{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
-    .list{display:grid;gap:10px}
-    .reservation{background:#0d1524;border:1px solid var(--line);border-radius:15px;padding:13px}
-    .reservation.today{border-color:rgba(212,175,55,.65);box-shadow:inset 0 0 0 1px rgba(212,175,55,.08)}
-    .res-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .name{font-size:1rem;font-weight:900}
-    .meta{color:#cbd5e1;font-size:.83rem;line-height:1.65;margin-top:6px}
-    .note{color:#fde68a;font-size:.8rem;margin-top:7px}
-    .badge{border-radius:999px;padding:4px 9px;font-size:.7rem;font-weight:900;white-space:nowrap}
-    .confirmed{background:#172e52;color:#bfdbfe}.arrived{background:#3b2a10;color:#fde68a}
-    .seated{background:#12391f;color:#bbf7d0}.completed{background:#263244;color:#cbd5e1}
-    .cancelled{background:#3a1d24;color:#fecaca}
-    .actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-    .actions .btn,.actions a{font-size:.76rem;text-decoration:none}
-    .empty{text-align:center;color:var(--muted);padding:30px 12px}
-    .footer{text-align:center;color:#64748b;font-size:.72rem;margin-top:14px}
-    dialog{
-      width:min(92vw,520px);border:1px solid var(--line);border-radius:18px;
-      background:#111827;color:#fff;padding:0;box-shadow:var(--shadow)
-    }
-    dialog::backdrop{background:rgba(0,0,0,.65)}
-    .modal{padding:16px}.modal h3{margin:0 0 12px}.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
-    .small{font-size:.76rem;color:var(--muted);line-height:1.5}
-  </style>
-</head>
-<body>
-<div class="wrap">
-  <header class="header">
-    <div class="brand">
-      <div class="logo">B</div>
-      <div>
-        <h1>Behesht Cafe Reservations</h1>
-        <div class="subtitle">Restaurant booking and guest management</div>
-      </div>
-    </div>
-    <div class="header-actions">
-      <button class="icon-btn" id="settingsBtn">Settings</button>
-    </div>
-  </header>
-
-  <div class="notice">
-    Reservations are stored on this device. Export a backup regularly, especially before clearing Safari or browser data.
-  </div>
-
-  <main class="layout">
-    <section class="card">
-      <h2 id="formTitle">New Reservation</h2>
-      <form id="reservationForm">
-        <input type="hidden" id="editId">
-        <div class="form-grid">
-          <div class="full">
-            <label for="name">Customer Name</label>
-            <input id="name" autocomplete="name" required>
-          </div>
-          <div class="full">
-            <label for="phone">Phone Number</label>
-            <input id="phone" type="tel" autocomplete="tel" placeholder="+1 416 555 0192" required>
-          </div>
-          <div>
-            <label for="guests">Guests</label>
-            <input id="guests" type="number" min="1" max="100" value="2" required>
-          </div>
-          <div>
-            <label for="table">Table</label>
-            <input id="table" placeholder="Table 4" required>
-          </div>
-          <div>
-            <label for="date">Date</label>
-            <input id="date" type="date" required>
-          </div>
-          <div>
-            <label for="time">Time</label>
-            <input id="time" type="time" required>
-          </div>
-          <div class="full">
-            <label for="occasion">Occasion</label>
-            <select id="occasion">
-              <option>Regular</option><option>Birthday</option><option>Anniversary</option>
-              <option>VIP</option><option>Business</option><option>Other</option>
-            </select>
-          </div>
-          <div class="full">
-            <label for="source">Booking Source</label>
-            <select id="source">
-              <option>Phone</option><option>Walk-in</option><option>Instagram</option>
-              <option>WhatsApp</option><option>Google</option><option>Website</option><option>Other</option>
-            </select>
-          </div>
-          <div class="full">
-            <label for="notes">Special Notes</label>
-            <textarea id="notes" placeholder="Birthday cake, high chair, allergies, window seat..."></textarea>
-          </div>
-          <div class="full"><button class="btn primary" id="saveBtn">Save Reservation</button></div>
-          <div class="full"><button type="button" class="btn secondary" id="cancelEdit" style="display:none;width:100%">Cancel Edit</button></div>
-        </div>
-      </form>
-    </section>
-
-    <section class="card">
-      <h2>Reservations Dashboard</h2>
-      <div class="stats">
-        <div class="stat"><b id="todayCount">0</b><span>Today</span></div>
-        <div class="stat"><b id="tomorrowCount">0</b><span>Tomorrow</span></div>
-        <div class="stat"><b id="upcomingCount">0</b><span>Upcoming</span></div>
-        <div class="stat"><b id="guestCount">0</b><span>Guests Today</span></div>
-      </div>
-
-      <div class="toolbar">
-        <button class="btn blue" id="exportJson">Export Backup</button>
-        <button class="btn secondary" id="importJson">Import Backup</button>
-        <button class="btn secondary" id="exportCsv">Export CSV</button>
-        <input id="importFile" type="file" accept=".json" hidden>
-      </div>
-
-      <div class="filters">
-        <input id="search" placeholder="Search name, phone, table or note...">
-        <select id="statusFilter">
-          <option value="all">All Statuses</option>
-          <option value="Confirmed">Confirmed</option>
-          <option value="Arrived">Arrived</option>
-          <option value="Seated">Seated</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-        </select>
-      </div>
-
-      <div id="list" class="list"></div>
-      <div id="empty" class="empty">No reservations found.</div>
-    </section>
-  </main>
-
-  <div class="footer">Behesht Cafe & Lounge • 647-620-8003</div>
-</div>
-
-<dialog id="settingsDialog">
-  <div class="modal">
-    <h3>Settings</h3>
-    <label for="restaurantPhone">Restaurant Phone</label>
-    <input id="restaurantPhone" value="6476208003">
-    <label for="reminderHours" style="margin-top:10px">Default Reminder Time</label>
-    <select id="reminderHours">
-      <option value="2">2 hours before</option>
-      <option value="4">4 hours before</option>
-      <option value="24">1 day before</option>
-    </select>
-    <p class="small">These settings are stored only on this device.</p>
-    <div class="modal-actions">
-      <button class="btn secondary" id="closeSettings">Close</button>
-      <button class="btn primary" id="saveSettings" style="width:auto">Save</button>
-    </div>
-  </div>
-</dialog>
-
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Behesht Reserve"><link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png"><title>Behesht Cafe Reservations</title>
+<style>
+:root{--gold:#d4af37;--gold2:#f6d365;--line:#273449;--muted:#94a3b8}
+*{box-sizing:border-box}body{margin:0;background:#090f1b;color:#fff;font-family:system-ui,-apple-system,Arial;padding:16px}.wrap{max-width:1150px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{display:flex;gap:12px;align-items:center}.logo{width:56px;height:56px;border-radius:17px;background:linear-gradient(145deg,var(--gold2),var(--gold));color:#111827;display:grid;place-items:center;font-size:28px;font-weight:900}h1{font-size:1.25rem;margin:0;color:var(--gold2)}.sub{color:var(--muted);font-size:.82rem}.sync{border:1px solid var(--line);border-radius:999px;padding:8px 11px;font-size:.78rem}.ok{color:#bbf7d0}.bad{color:#fecaca}
+.notice{background:#1f2937;border:1px solid var(--line);padding:10px;border-radius:12px;color:#fde68a;margin-bottom:14px;font-size:.82rem}.layout{display:grid;grid-template-columns:1fr;gap:14px}@media(min-width:920px){.layout{grid-template-columns:390px 1fr}}.card{background:#111827;border:1px solid var(--line);border-radius:18px;padding:16px}h2{font-size:1rem;margin:0 0 14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.full{grid-column:1/-1}label{font-size:.76rem;color:#cbd5e1;font-weight:700;display:block;margin-bottom:5px}input,select,textarea{width:100%;background:#0d1524;color:#fff;border:1px solid var(--line);border-radius:10px;padding:11px;font-size:16px}textarea{min-height:78px}button,.btn{border:0;border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer;text-decoration:none;font-size:.78rem}.primary{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111827;width:100%}.blue{background:#172e52;color:#bfdbfe}.green{background:#12391f;color:#bbf7d0}.orange{background:#3b2a10;color:#fde68a}.gray{background:#263244;color:#cbd5e1}.red{background:#3a1d24;color:#fecaca}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}.stat{background:#172033;border:1px solid var(--line);padding:9px;text-align:center;border-radius:11px}.stat b{display:block;color:var(--gold2)}.stat span{font-size:.68rem;color:var(--muted)}.filters{display:grid;grid-template-columns:1fr 135px;gap:8px;margin-bottom:12px}.toolbar,.actions{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.res{background:#0d1524;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:9px}.head{display:flex;justify-content:space-between;gap:10px}.name{font-weight:900}.meta{color:#cbd5e1;font-size:.82rem;line-height:1.6;margin-top:5px}.note{color:#fde68a;font-size:.8rem;margin-top:6px}.badge{border-radius:999px;padding:4px 8px;font-size:.69rem;background:#172e52;color:#bfdbfe;height:max-content}.empty{color:var(--muted);text-align:center;padding:26px}footer{text-align:center;color:#64748b;font-size:.72rem;margin-top:14px}
+@media(max-width:540px){.filters{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><div class="wrap">
+<header><div class="brand"><div class="logo">B</div><div><h1>Behesht Cafe Reservations</h1><div class="sub">Live cloud sync across all devices</div></div></div><div id="sync" class="sync">Connecting…</div></header>
+<div class="notice">Reservations are stored online and shared between Mac, iPhone and other devices.</div>
+<div class="layout">
+<section class="card"><h2 id="formTitle">New Reservation</h2><form id="form"><input type="hidden" id="editId"><div class="grid">
+<div class="full"><label>Customer Name</label><input id="name" required></div><div class="full"><label>Phone Number</label><input id="phone" type="tel" required></div>
+<div><label>Guests</label><input id="guests" type="number" min="1" value="2" required></div><div><label>Table</label><input id="table" required></div>
+<div><label>Date</label><input id="date" type="date" required></div><div><label>Time</label><input id="time" type="time" required></div>
+<div class="full"><label>Occasion</label><select id="occasion"><option>Regular</option><option>Birthday</option><option>Anniversary</option><option>VIP</option><option>Business</option><option>Other</option></select></div>
+<div class="full"><label>Booking Source</label><select id="source"><option>Phone</option><option>Walk-in</option><option>Instagram</option><option>WhatsApp</option><option>Google</option><option>Website</option><option>Other</option></select></div>
+<div class="full"><label>Special Notes</label><textarea id="notes"></textarea></div><div class="full"><button class="primary" id="saveBtn">Save Reservation</button></div><div class="full"><button type="button" class="gray" id="cancelEdit" style="display:none;width:100%">Cancel Edit</button></div>
+</div></form></section>
+<section class="card"><h2>Reservations Dashboard</h2><div class="stats"><div class="stat"><b id="todayCount">0</b><span>Today</span></div><div class="stat"><b id="tomorrowCount">0</b><span>Tomorrow</span></div><div class="stat"><b id="upcomingCount">0</b><span>Upcoming</span></div><div class="stat"><b id="guestCount">0</b><span>Guests Today</span></div></div>
+<div class="toolbar"><button class="blue" id="refresh">Refresh</button><button class="gray" id="csv">Export CSV</button></div><div class="filters"><input id="search" placeholder="Search name, phone, table or note..."><select id="status"><option value="all">All Statuses</option><option>Confirmed</option><option>Arrived</option><option>Seated</option><option>Completed</option><option>Cancelled</option></select></div><div id="list"></div><div id="empty" class="empty">No reservations found.</div></section>
+</div><footer>Behesht Cafe & Lounge • 647-620-8003</footer></div>
 <script>
-const STORE='behesht_reservations_final_v1';
-const SETTINGS='behesht_reservation_settings_v1';
-let reservations=JSON.parse(localStorage.getItem(STORE)||'[]');
-let appSettings=JSON.parse(localStorage.getItem(SETTINGS)||'{"restaurantPhone":"6476208003","reminderHours":"4"}');
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const dateOnly=d=>d.toISOString().slice(0,10);
-const today=dateOnly(new Date());
-const tomorrow=dateOnly(new Date(Date.now()+86400000));
-$('date').value=today;
-$('restaurantPhone').value=appSettings.restaurantPhone;
-$('reminderHours').value=appSettings.reminderHours;
-
-function persist(){localStorage.setItem(STORE,JSON.stringify(reservations));render()}
-function resetForm(){
-  $('reservationForm').reset();$('editId').value='';$('date').value=dateOnly(new Date());$('guests').value=2;
-  $('formTitle').textContent='New Reservation';$('saveBtn').textContent='Save Reservation';
-  $('cancelEdit').style.display='none';
-}
-$('cancelEdit').onclick=resetForm;
-
-$('reservationForm').onsubmit=e=>{
-  e.preventDefault();
-  const id=$('editId').value;
-  const item={
-    id:id?Number(id):Date.now(),name:$('name').value.trim(),phone:$('phone').value.trim(),
-    guests:Number($('guests').value),table:$('table').value.trim(),date:$('date').value,time:$('time').value,
-    occasion:$('occasion').value,source:$('source').value,notes:$('notes').value.trim(),
-    status:id?(reservations.find(x=>x.id===Number(id))?.status||'Confirmed'):'Confirmed',
-    createdAt:id?(reservations.find(x=>x.id===Number(id))?.createdAt||new Date().toISOString()):new Date().toISOString()
-  };
-  const duplicate=reservations.find(r=>r.id!==item.id&&r.date===item.date&&r.time===item.time&&r.table.toLowerCase()===item.table.toLowerCase()&&r.status!=='Cancelled');
-  if(duplicate&&!confirm('This table already has a reservation at the same date and time. Save anyway?'))return;
-  const i=reservations.findIndex(x=>x.id===item.id);
-  if(i>=0)reservations[i]=item;else reservations.push(item);
-  persist();resetForm();
-};
-
-window.editReservation=id=>{
-  const r=reservations.find(x=>x.id===id);if(!r)return;
-  $('name').value=r.name;$('phone').value=r.phone;$('guests').value=r.guests;$('table').value=r.table;
-  $('date').value=r.date;$('time').value=r.time;$('occasion').value=r.occasion||'Regular';
-  $('source').value=r.source||'Phone';$('notes').value=r.notes||'';$('editId').value=r.id;
-  $('formTitle').textContent='Edit Reservation';$('saveBtn').textContent='Update Reservation';
-  $('cancelEdit').style.display='block';scrollTo({top:0,behavior:'smooth'});
-};
-window.setStatus=(id,status)=>{
-  const r=reservations.find(x=>x.id===id);if(!r)return;r.status=status;persist();
-};
-window.deleteReservation=id=>{
-  if(confirm('Permanently delete this reservation?')){reservations=reservations.filter(x=>x.id!==id);persist()}
-};
-
-function reminderText(r){
-  return `Hello ${r.name}, this is a reminder from Behesht Cafe & Lounge for your reservation on ${r.date} at ${r.time}, table ${r.table}, for ${r.guests} guest${r.guests===1?'':'s'}. Please call ${appSettings.restaurantPhone} if you need to make any changes. We look forward to seeing you.`;
-}
-
-$('search').oninput=render;$('statusFilter').onchange=render;
-
-function render(){
-  const q=$('search').value.toLowerCase().trim(),filter=$('statusFilter').value,now=new Date();
-  $('todayCount').textContent=reservations.filter(r=>r.date===today&&r.status!=='Cancelled').length;
-  $('tomorrowCount').textContent=reservations.filter(r=>r.date===tomorrow&&r.status!=='Cancelled').length;
-  $('upcomingCount').textContent=reservations.filter(r=>new Date(r.date+'T'+r.time)>=now&&r.status!=='Cancelled').length;
-  $('guestCount').textContent=reservations.filter(r=>r.date===today&&r.status!=='Cancelled').reduce((a,r)=>a+Number(r.guests||0),0);
-
-  const list=reservations.filter(r=>{
-    const text=[r.name,r.phone,r.table,r.notes,r.occasion,r.source,r.status].join(' ').toLowerCase();
-    return text.includes(q)&&(filter==='all'||r.status===filter);
-  }).sort((a,b)=>new Date(a.date+'T'+a.time)-new Date(b.date+'T'+b.time));
-
-  $('list').innerHTML='';$('empty').style.display=list.length?'none':'block';
-  for(const r of list){
-    const phone=r.phone.replace(/\D/g,'');
-    const wa='https://wa.me/'+phone+'?text='+encodeURIComponent(reminderText(r));
-    const cls=(r.status||'Confirmed').toLowerCase();
-    const el=document.createElement('article');el.className='reservation'+(r.date===today?' today':'');
-    el.innerHTML=`<div class="res-head"><div>
-      <div class="name">${esc(r.name)}</div>
-      <div class="meta">📞 ${esc(r.phone)}<br>👥 ${r.guests} guests • 🪑 ${esc(r.table)}<br>
-      📅 ${esc(r.date)} • ⏰ ${esc(r.time)}<br>🎉 ${esc(r.occasion||'Regular')} • 📍 ${esc(r.source||'Phone')}</div>
-      ${r.notes?`<div class="note">📝 ${esc(r.notes)}</div>`:''}
-      </div><span class="badge ${cls}">${esc(r.status||'Confirmed')}</span></div>
-      <div class="actions">
-        <a class="btn green" target="_blank" href="${wa}">WhatsApp</a>
-        <button class="btn blue" onclick="editReservation(${r.id})">Edit</button>
-        <button class="btn orange" onclick="setStatus(${r.id},'Arrived')">Arrived</button>
-        <button class="btn green" onclick="setStatus(${r.id},'Seated')">Seated</button>
-        <button class="btn secondary" onclick="setStatus(${r.id},'Completed')">Completed</button>
-        <button class="btn danger" onclick="setStatus(${r.id},'Cancelled')">Cancel</button>
-        <button class="btn danger" onclick="deleteReservation(${r.id})">Delete</button>
-      </div>`;
-    $('list').appendChild(el);
-  }
-}
-
-$('exportJson').onclick=()=>{
-  const payload={version:1,exportedAt:new Date().toISOString(),reservations,settings:appSettings};
-  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='behesht-reservations-backup-'+dateOnly(new Date())+'.json';a.click();URL.revokeObjectURL(a.href);
-};
-$('importJson').onclick=()=>$('importFile').click();
-$('importFile').onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;
-  try{
-    const parsed=JSON.parse(await f.text());
-    const incoming=Array.isArray(parsed)?parsed:parsed.reservations;
-    if(!Array.isArray(incoming))throw Error();
-    if(confirm('Replace current reservations with this backup?')){
-      reservations=incoming;
-      if(parsed.settings){appSettings=parsed.settings;localStorage.setItem(SETTINGS,JSON.stringify(appSettings))}
-      persist();alert('Backup restored successfully.');
-    }
-  }catch{alert('Invalid backup file.')}
-  e.target.value='';
-};
-$('exportCsv').onclick=()=>{
-  const rows=[['Name','Phone','Guests','Table','Date','Time','Occasion','Source','Status','Notes']];
-  reservations.forEach(r=>rows.push([r.name,r.phone,r.guests,r.table,r.date,r.time,r.occasion||'',r.source||'',r.status||'',r.notes||'']));
-  const csv=rows.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='behesht-reservations-'+dateOnly(new Date())+'.csv';a.click();URL.revokeObjectURL(a.href);
-};
-
-$('settingsBtn').onclick=()=>$('settingsDialog').showModal();
-$('closeSettings').onclick=()=>$('settingsDialog').close();
-$('saveSettings').onclick=()=>{
-  appSettings={restaurantPhone:$('restaurantPhone').value.trim(),reminderHours:$('reminderHours').value};
-  localStorage.setItem(SETTINGS,JSON.stringify(appSettings));$('settingsDialog').close();
-};
-
-render();
-if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
-</script>
-</body>
-</html>
+const U="https://avgvhoseeugjvbuqsxwf.supabase.co",K="sb_publishable_Mz_Qe3Me17fyBSaHyEyGBA_bpIGhLVV",API=U+'/rest/v1/reservations';
+const H={apikey:K,Authorization:'Bearer '+K,'Content-Type':'application/json'};
+let data=[];const $=x=>document.getElementById(x),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dstr=d=>d.toISOString().slice(0,10);$('date').value=dstr(new Date());
+async function req(path='',opt={}){const r=await fetch(API+path,{...opt,headers:{...H,...(opt.headers||{})}});if(!r.ok)throw Error(await r.text());return r.status===204?null:r.json()}
+function state(t,ok=true){$('sync').textContent=t;$('sync').className='sync '+(ok?'ok':'bad')}
+async function load(){try{data=(await req('?select=*&order=reservation_date.asc,reservation_time.asc')).map(r=>({id:r.id,name:r.customer_name,phone:r.phone||'',guests:r.guests||0,table:r.table_number||'',date:r.reservation_date,time:r.reservation_time||'',occasion:r.occasion||'Regular',source:r.booking_source||'Phone',notes:r.notes||'',status:r.status||'Confirmed'}));render();state('Synced')}catch(e){console.error(e);state('Sync error',false)}}
+function reset(){$('form').reset();$('editId').value='';$('date').value=dstr(new Date());$('guests').value=2;$('formTitle').textContent='New Reservation';$('saveBtn').textContent='Save Reservation';$('cancelEdit').style.display='none'}$('cancelEdit').onclick=reset;
+$('form').onsubmit=async e=>{e.preventDefault();state('Saving…');const id=$('editId').value,p={customer_name:$('name').value.trim(),phone:$('phone').value.trim(),guests:+$('guests').value,table_number:$('table').value.trim(),reservation_date:$('date').value,reservation_time:$('time').value,occasion:$('occasion').value,booking_source:$('source').value,notes:$('notes').value.trim()};try{if(id)await req('?id=eq.'+id,{method:'PATCH',body:JSON.stringify(p),headers:{Prefer:'return=minimal'}});else await req('',{method:'POST',body:JSON.stringify(p),headers:{Prefer:'return=minimal'}});reset();await load()}catch(e){alert('Could not save reservation.');state('Sync error',false)}};
+window.editR=id=>{const r=data.find(x=>x.id===id);if(!r)return;for(const k of ['name','phone','guests','table','date','time','occasion','source','notes'])$(k).value=r[k];$('editId').value=id;$('formTitle').textContent='Edit Reservation';$('saveBtn').textContent='Update Reservation';$('cancelEdit').style.display='block';scrollTo({top:0,behavior:'smooth'})};
+window.stat=async(id,status)=>{try{await req('?id=eq.'+id,{method:'PATCH',body:JSON.stringify({status}),headers:{Prefer:'return=minimal'}});await load()}catch(e){alert('Could not update status.')}};
+window.del=async id=>{if(!confirm('Permanently delete this reservation?'))return;try{await req('?id=eq.'+id,{method:'DELETE',headers:{Prefer:'return=minimal'}});await load()}catch(e){alert('Could not delete reservation.')}};
+$('search').oninput=render;$('status').onchange=render;$('refresh').onclick=load;
+function render(){const q=$('search').value.toLowerCase(),f=$('status').value,n=new Date(),t=dstr(n),tm=dstr(new Date(Date.now()+86400000));$('todayCount').textContent=data.filter(r=>r.date===t&&r.status!=='Cancelled').length;$('tomorrowCount').textContent=data.filter(r=>r.date===tm&&r.status!=='Cancelled').length;$('upcomingCount').textContent=data.filter(r=>new Date(r.date+'T'+r.time)>=n&&r.status!=='Cancelled').length;$('guestCount').textContent=data.filter(r=>r.date===t&&r.status!=='Cancelled').reduce((a,r)=>a+r.guests,0);const a=data.filter(r=>[r.name,r.phone,r.table,r.notes,r.occasion,r.source,r.status].join(' ').toLowerCase().includes(q)&&(f==='all'||r.status===f));$('list').innerHTML='';$('empty').style.display=a.length?'none':'block';for(const r of a){const p=r.phone.replace(/\D/g,''),m=encodeURIComponent(`Hello ${r.name}, this is a reminder from Behesht Cafe & Lounge for your reservation on ${r.date} at ${r.time}, table ${r.table}, for ${r.guests} guests. Please call 6476208003 if you need changes.`),e=document.createElement('div');e.className='res';e.innerHTML=`<div class="head"><div><div class="name">${esc(r.name)}</div><div class="meta">📞 ${esc(r.phone)}<br>👥 ${r.guests} guests • 🪑 ${esc(r.table)}<br>📅 ${r.date} • ⏰ ${r.time}<br>🎉 ${esc(r.occasion)} • 📍 ${esc(r.source)}</div>${r.notes?`<div class="note">📝 ${esc(r.notes)}</div>`:''}</div><span class="badge">${esc(r.status)}</span></div><div class="actions"><a class="btn green" target="_blank" href="https://wa.me/${p}?text=${m}">WhatsApp</a><button class="blue" onclick="editR('${r.id}')">Edit</button><button class="orange" onclick="stat('${r.id}','Arrived')">Arrived</button><button class="green" onclick="stat('${r.id}','Seated')">Seated</button><button class="gray" onclick="stat('${r.id}','Completed')">Completed</button><button class="red" onclick="stat('${r.id}','Cancelled')">Cancel</button><button class="red" onclick="del('${r.id}')">Delete</button></div>`;$('list').appendChild(e)}}
+$('csv').onclick=()=>{const rows=[['Name','Phone','Guests','Table','Date','Time','Occasion','Source','Status','Notes'],...data.map(r=>[r.name,r.phone,r.guests,r.table,r.date,r.time,r.occasion,r.source,r.status,r.notes])],csv=rows.map(x=>x.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\n'),b=new Blob([csv],{type:'text/csv'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='behesht-reservations-'+dstr(new Date())+'.csv';a.click()};
+load();setInterval(load,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
+if('serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
+</script></body></html>
