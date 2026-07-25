@@ -112,7 +112,7 @@ const parseDate=s=>new Date(s+"T12:00:00");
 const fmt=s=>parseDate(s).toLocaleDateString("en-CA",{weekday:"short",month:"short",day:"numeric"});
 $("date").value=selectedDate;$("viewDate").value=selectedDate;
 
-async function req(path="",opt={}){const r=await fetch(API+path,{...opt,headers:{...H,...(opt.headers||{})}});if(!r.ok)throw Error(await r.text());return r.status===204?null:r.json()}
+async function req(path="",opt={}){const r=await fetch(API+path,{...opt,headers:{...H,...(opt.headers||{})}});const text=await r.text();if(!r.ok)throw Error(text||("HTTP "+r.status));if(!text)return null;try{return JSON.parse(text)}catch{return text}}
 function state(t,ok=true){$("sync").textContent=t;$("sync").className="sync "+(ok?"ok":"bad")}
 
 async function load(){
@@ -142,7 +142,7 @@ $("form").onsubmit=async e=>{
  try{
   if(id)await req("?id=eq."+id,{method:"PATCH",body:JSON.stringify(p),headers:{Prefer:"return=minimal"}});
   else await req("",{method:"POST",body:JSON.stringify(p),headers:{Prefer:"return=minimal"}});
-  selectedDate=p.reservation_date;$("viewDate").value=selectedDate;reset();await load();
+  selectedDate=p.reservation_date;$("viewDate").value=selectedDate;reset();await load();state("Saved");setTimeout(()=>state("Synced"),1200);
  }catch(e){alert("Could not save reservation.\n\n"+e.message);state("Sync error",false)}
 };
 
