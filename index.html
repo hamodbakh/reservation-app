@@ -71,17 +71,36 @@ button,.btn{border:0;border-radius:10px;padding:10px 12px;font-weight:800;cursor
 <div class="stat"><b id="totalCount">0</b><span>Total</span></div>
 </div>
 
+<div class="view-switch">
+<button id="calendarViewBtn" class="blue active">Calendar View</button>
+<button id="dailyViewBtn" class="gray">Daily View</button>
+</div>
+
+<div id="calendarView">
+<div class="calendar-head">
+<button class="gray" id="prevMonth">◀</button>
+<div id="calendarTitle" class="calendar-title"></div>
+<button class="gray" id="nextMonth">▶</button>
+</div>
+
+<div class="calendar-grid">
+<div class="dow">Sun</div><div class="dow">Mon</div><div class="dow">Tue</div>
+<div class="dow">Wed</div><div class="dow">Thu</div><div class="dow">Fri</div><div class="dow">Sat</div>
+</div>
+<div id="calendarGrid" class="calendar-grid"></div>
+</div>
+
+<div id="dailyView" style="display:none">
 <div class="date-nav">
 <button class="gray" id="prevDay">◀</button>
 <input id="viewDate" type="date">
 <button class="gray" id="nextDay">▶</button>
 </div>
 
-<div id="dateStrip" class="date-strip"></div>
-
 <div class="day-title">
 <strong id="dayLabel"></strong>
 <button class="blue" id="todayBtn">Today</button>
+</div>
 </div>
 
 <div class="toolbar">
@@ -110,7 +129,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const dstr=d=>d.toISOString().slice(0,10);
 const parseDate=s=>new Date(s+"T12:00:00");
 const fmt=s=>parseDate(s).toLocaleDateString("en-CA",{weekday:"short",month:"short",day:"numeric"});
-$("date").value=selectedDate;$("viewDate").value=selectedDate;
+$("date").value=selectedDate;$("viewDate").value=selectedDate;$("search").value="";$("status").value="all";
 
 async function req(path="",opt={}){const r=await fetch(API+path,{...opt,headers:{...H,...(opt.headers||{})}});const text=await r.text();if(!r.ok)throw Error(text||("HTTP "+r.status));if(!text)return null;try{return JSON.parse(text)}catch{return text}}
 function state(t,ok=true){$("sync").textContent=t;$("sync").className="sync "+(ok?"ok":"bad")}
@@ -179,7 +198,7 @@ function renderCalendar(){
  const y=calendarCursor.getFullYear(),m=calendarCursor.getMonth();
  $("calendarTitle").textContent=calendarCursor.toLocaleDateString("en-CA",{month:"long",year:"numeric"});
  const first=new Date(y,m,1),start=new Date(y,m,1-first.getDay());
- $("calendarGrid").innerHTML="";
+ const cg=$("calendarGrid");if(!cg)return;cg.innerHTML="";
  for(let i=0;i<42;i++){
   const d=new Date(start);d.setDate(start.getDate()+i);
   const ds=dstr(d),inMonth=d.getMonth()===m,today=ds===dstr(new Date());
@@ -189,12 +208,12 @@ function renderCalendar(){
   b.className="cal-day"+(!inMonth?" muted":"")+(ds===selectedDate?" selected":"")+(today?" today":"");
   b.innerHTML=`<div class="day-num">${d.getDate()}</div>${guests?`<div class="guests">${guests} guests</div>`:""}${count?`<div class="count">${count}</div>`:""}`;
   b.onclick=()=>{setViewDate(ds);$("calendarView").style.display="none";$("dailyView").style.display="block";$("dailyViewBtn").className="blue active";$("calendarViewBtn").className="gray"};
-  $("calendarGrid").appendChild(b);
+  cg.appendChild(b);
  }
 }
 
 function render(){
- const q=$("search").value.toLowerCase(),f=$("status").value,n=new Date();
+ const q=($("search").value||"").trim().toLowerCase(),f=($("status").value||"all").trim().toLowerCase(),n=new Date();
  const day=data.filter(r=>r.date===selectedDate);
  $("selectedCount").textContent=day.filter(r=>r.status!=="Cancelled").length;
  $("selectedGuests").textContent=day.filter(r=>r.status!=="Cancelled").reduce((a,r)=>a+r.guests,0);
@@ -203,7 +222,7 @@ function render(){
  $("dayLabel").textContent=fmt(selectedDate);
  renderCalendar();
 
- const a=day.filter(r=>[r.name,r.phone,r.table,r.notes,r.occasion,r.source,r.status].join(" ").toLowerCase().includes(q)&&(f==="all"||r.status===f));
+ const a=day.filter(r=>[r.name,r.phone,r.table,r.notes,r.occasion,r.source,r.status].join(" ").toLowerCase().includes(q)&&(f==="all"||f.includes("all")||(r.status||"").toLowerCase()===f));
  $("list").innerHTML="";$("empty").style.display=a.length?"none":"block";
  for(const r of a){
   const p=r.phone.replace(/\D/g,"");
@@ -220,7 +239,13 @@ $("csv").onclick=()=>{
  const b=new Blob([csv],{type:"text/csv"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="behesht-reservations-"+dstr(new Date())+".csv";a.click()
 };
 
-load();setInterval(load,5000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
-if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js"));
+$("calendarView").style.display="block";$("dailyView").style.display="none";load();setInterval(load,5000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)load()});
+if("serviceWorker" in navigator){
+addEventListener("load",async()=>{
+ const regs=await navigator.serviceWorker.getRegistrations();
+ for(const reg of regs) await reg.unregister();
+ if("caches" in window){for(const key of await caches.keys()) await caches.delete(key)}
+});
+}
 </script>
 </body></html>
