@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Reservations Pro</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --whatsapp: #25d366;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 1rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .form-grid .full-width {
+                grid-column: span 2;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            color: #475569;
+        }
+
+        input, select, textarea {
+            padding: 0.65rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+            background-color: #fff;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: #64748b;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filters input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-confirmed {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-wa {
+            background-color: var(--whatsapp);
+            color: white;
+            border: none;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-wa:hover { opacity: 0.9; }
+
+        .btn-edit {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border: none;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .btn-edit:hover { background-color: #bae6fd; }
+
+        .btn-delete {
+            background-color: #fee2e2;
+            color: var(--danger);
+            border: none;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .btn-delete:hover { background-color: #fecaca; }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .note-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Restaurant Reservations Pro</h1>
+        <p class="subtitle">Management, Notes & Customer Reminders</p>
+    </header>
+
+    <!-- Reservation Form -->
+    <div class="card">
+        <h2 id="formTitle">New Reservation</h2>
+        <form id="reservationForm">
+            <input type="hidden" id="editIndex" value="">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="customerName">Customer Name</label>
+                    <input type="text" id="customerName" required placeholder="e.g., John Smith">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number (with Country Code)</label>
+                    <input type="tel" id="phone" required placeholder="e.g., +14165550192">
+                </div>
+
+                <div class="form-group">
+                    <label for="guests">Number of Guests</label>
+                    <input type="number" id="guests" min="1" max="50" value="2" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="tableNumber">Table Number</label>
+                    <input type="text" id="tableNumber" required placeholder="e.g., Table 4">
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="time">Time</label>
+                    <input type="time" id="time" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="occasion">Occasion / Special Event</label>
+                    <select id="occasion">
+                        <option value="None">Normal / Regular</option>
+                        <option value="Birthday">🎂 Birthday</option>
+                        <option value="Anniversary">💍 Anniversary</option>
+                        <option value="VIP">⭐ VIP Guest</option>
+                        <option value="Other">🎉 Other Celebration</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Special Notes</label>
+                    <input type="text" id="notes" placeholder="e.g., Window seat preferred, allergies...">
+                </div>
+
+                <div class="form-group full-width">
+                    <button type="submit" id="submitBtn" class="btn">Save & Confirm Reservation</button>
+                    <button type="button" id="cancelEditBtn" class="btn btn-secondary" onclick="resetForm()">Cancel Edit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Reservation List -->
+    <div class="card">
+        <h2>Current Reservations</h2>
+        
+        <div class="filters">
+            <input type="text" id="searchInput" placeholder="Search by name, phone or note...">
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Phone</th>
+                        <th>Guests</th>
+                        <th>Table</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="reservationTableBody">
+                    <!-- Dynamic Rows Will Appear Here -->
+                </tbody>
+            </table>
+        </div>
+        <div id="emptyState" class="empty-state" style="display: none;">No reservations found.</div>
+    </div>
+</div>
+
+<script>
+    let reservations = JSON.parse(localStorage.getItem('restaurant_reservations')) || [];
+
+    const form = document.getElementById('reservationForm');
+    const tableBody = document.getElementById('reservationTableBody');
+    const searchInput = document.getElementById('searchInput');
+    const emptyState = document.getElementById('emptyState');
+    const editIndexInput = document.getElementById('editIndex');
+    const formTitle = document.getElementById('formTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+    document.getElementById('date').valueAsDate = new Date();
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const reservationData = {
+            id: editIndexInput.value === "" ? Date.now() : Number(editIndexInput.value),
+            name: document.getElementById('customerName').value,
+            phone: document.getElementById('phone').value,
+            guests: document.getElementById('guests').value,
+            table: document.getElementById('tableNumber').value,
+            date: document.getElementById('date').value,
+            time: document.getElementById('time').value,
+            occasion: document.getElementById('occasion').value,
+            notes: document.getElementById('notes').value,
+            status: 'Confirmed'
+        };
+
+        const editIdx = editIndexInput.value;
+        if (editIdx === "") {
+            reservations.push(reservationData);
+        } else {
+            const index = reservations.findIndex(r => r.id == editIdx);
+            if (index !== -1) {
+                reservations[index] = reservationData;
+            }
+            resetForm();
+        }
+
+        saveAndRender();
+        form.reset();
+        document.getElementById('date').valueAsDate = new Date();
+    });
+
+    window.editReservation = function(id) {
+        const res = reservations.find(r => r.id == id);
+        if (!res) return;
+
+        document.getElementById('customerName').value = res.name;
+        document.getElementById('phone').value = res.phone;
+        document.getElementById('guests').value = res.guests;
+        document.getElementById('tableNumber').value = res.table;
+        document.getElementById('date').value = res.date;
+        document.getElementById('time').value = res.time;
+        document.getElementById('occasion').value = res.occasion || 'None';
+        document.getElementById('notes').value = res.notes || '';
+        editIndexInput.value = res.id;
+
+        formTitle.textContent = "Edit Reservation";
+        submitBtn.textContent = "Update Reservation";
+        cancelEditBtn.style.display = "block";
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    window.resetForm = function() {
+        form.reset();
+        editIndexInput.value = "";
+        formTitle.textContent = "New Reservation";
+        submitBtn.textContent = "Save & Confirm Reservation";
+        cancelEditBtn.style.display = "none";
+        document.getElementById('date').valueAsDate = new Date();
+    }
+
+    window.deleteReservation = function(id) {
+        if(confirm('Are you sure you want to cancel this reservation?')) {
+            reservations = reservations.filter(res => res.id !== id);
+            saveAndRender();
+        }
+    }
+
+    searchInput.addEventListener('input', function() {
+        renderTable(this.value.toLowerCase());
+    });
+
+    function saveAndRender() {
+        localStorage.setItem('restaurant_reservations', JSON.stringify(reservations));
+        renderTable(searchInput.value.toLowerCase());
+    }
+
+    function getOccasionIcon(occasion) {
+        switch(occasion) {
+            case 'Birthday': return '🎂 ';
+            case 'Anniversary': return '💍 ';
+            case 'VIP': return '⭐ ';
+            case 'Other': return '🎉 ';
+            default: return '';
+        }
+    }
+
+    function renderTable(filter = '') {
+        tableBody.innerHTML = '';
+        
+        const filtered = reservations.filter(res => 
+            res.name.toLowerCase().includes(filter) || 
+            res.phone.toLowerCase().includes(filter) ||
+            (res.notes && res.notes.toLowerCase().includes(filter))
+        );
+
+        filtered.sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`));
+
+        if (filtered.length === 0) {
+            emptyState.style.display = 'block';
+            return;
+        } else {
+            emptyState.style.display = 'none';
+        }
+
+        filtered.forEach(res => {
+            let cleanPhone = res.phone.replace(/[^0-9+]/g, '');
+            let icon = getOccasionIcon(res.occasion);
+            let occasionText = res.occasion && res.occasion !== 'None' ? `[${res.occasion}] ` : '';
+            let notesText = res.notes ? ` - Note: ${res.notes}` : '';
+            
+            let msg = `Hello ${res.name}, this is a reminder from our restaurant for your table reservation (${res.table}) on ${res.date} at ${res.time} for ${res.guests} guests.${occasionText}${notesText} We look forward to seeing you!`;
+            let encodedMsg = encodeURIComponent(msg);
+            let waLink = `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>
+                    <strong>${icon}${escapeHtml(res.name)}</strong>
+                    ${res.occasion && res.occasion !== 'None' ? `<br><small class="badge" style="background:#fef3c7; color:#92400e;">${res.occasion}</small>` : ''}
+                    ${res.notes ? `<div class="note-text">📝 ${escapeHtml(res.notes)}</div>` : ''}
+                </td>
+                <td>${escapeHtml(res.phone)}</td>
+                <td>${res.guests}</td>
+                <td>${escapeHtml(res.table)}</td>
+                <td>${res.date} <br><small style="color:#64748b">${res.time}</small></td>
+                <td><span class="badge badge-confirmed">${res.status}</span></td>
+                <td>
+                    <div class="action-btns">
+                        <a href="${waLink}" target="_blank" class="btn-wa">Remind</a>
+                        <button class="btn-edit" onclick="editReservation(${res.id})">Edit</button>
+                        <button class="btn-delete" onclick="deleteReservation(${res.id})">Cancel</button>
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>'"]/g, 
+            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+    }
+
+    renderTable();
+</script>
+
+</body>
+</html>
